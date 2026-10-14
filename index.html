@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Lunéa Confeitaria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('lunea-theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --text: #1a1a1a;
+      --muted: #666;
+      --topbar-bg: rgba(245, 244, 241, 0.82);
+      --topbar-bg-scrolled: rgba(245, 244, 241, 0.88);
+      --topbar-bg-up: rgba(245, 244, 241, 0.90);
+      --cat-bg: #f0eeea;
+      --cat-border: #ddd9d2;
+      --cat-text: #555;
+      --cat-active-bg: #1a1a1a;
+      --cat-active-text: #fff;
+      --card-bg: #e8e6e1;
+      --end-color: #aaa;
+      --shadow: rgba(0,0,0,0.07);
+      --border-subtle: rgba(0,0,0,0.04);
+    }
+
+    html.dark {
+      --bg: #121212;
+      --text: #f2f0eb;
+      --muted: #a0a0a0;
+      --topbar-bg: rgba(18, 18, 18, 0.88);
+      --topbar-bg-scrolled: rgba(18, 18, 18, 0.94);
+      --topbar-bg-up: rgba(22, 22, 22, 0.96);
+      --cat-bg: #2a2a2a;
+      --cat-border: #3a3a3a;
+      --cat-text: #c8c8c8;
+      --cat-active-bg: #f2f0eb;
+      --cat-active-text: #121212;
+      --card-bg: #1e1e1e;
+      --end-color: #666;
+      --shadow: rgba(0,0,0,0.4);
+      --border-subtle: rgba(255,255,255,0.06);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(40px) saturate(160%);
+      -webkit-backdrop-filter: blur(40px) saturate(160%);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.35s ease, box-shadow 0.35s ease;
+      pointer-events: auto;
+    }
+
+    .topbar.scrolled {
+      background: var(--topbar-bg-scrolled);
+      box-shadow: 0 4px 30px var(--shadow);
+    }
+
+    .topbar.scroll-up {
+      background: var(--topbar-bg-up);
+    }
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 16px 0;
+      position: relative;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      right: 12px;
+      top: 14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--cat-border);
+      background: var(--cat-bg);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 70;
+      transition: transform 0.2s ease, background 0.25s ease, border-color 0.25s ease;
+      pointer-events: auto;
+    }
+
+    .theme-toggle:hover { transform: scale(1.06); }
+
+    .theme-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    html.dark .theme-toggle .icon-sun { display: block; }
+    html.dark .theme-toggle .icon-moon { display: none; }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      padding: 0 48px;
+    }
+
+    .brand-text { text-align: center; line-height: 1; }
+
+    .brand-name {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--text);
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+      transition: color 0.35s ease;
+    }
+
+    .brand-sub {
+      font-family: 'Josefin Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 4.5px;
+      text-transform: uppercase;
+      margin-top: 6px;
+      transition: color 0.35s ease;
+    }
+
+    .categories {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 14px;
+      scrollbar-width: none;
+      position: relative;
+      z-index: 60;
+      pointer-events: auto;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+
+    .cat {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 500;
+      background: var(--cat-bg);
+      color: var(--cat-text);
+      border: 1.5px solid var(--cat-border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      pointer-events: auto !important;
+      position: relative;
+      z-index: 100;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .cat:hover:not(.active) {
+      filter: brightness(1.08);
+    }
+
+    .cat.active {
+      background: var(--cat-active-bg);
+      color: var(--cat-active-text);
+      border-color: var(--cat-active-bg);
+      box-shadow: 0 4px 14px var(--shadow);
+    }
+
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 8px 12px 50px;
+    }
+
+    .item {
+      position: relative;
+      width: 100%;
+      height: 71vh;
+      max-height: 620px;
+      min-height: 460px;
+      overflow: hidden;
+      background: var(--card-bg);
+      border-radius: 18px;
+      box-shadow: 0 6px 28px var(--shadow);
+      transition: filter 0.5s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease, box-shadow 0.4s ease;
+      will-change: filter, transform;
+    }
+
+    .item.blurred {
+      filter: blur(10px) brightness(0.90);
+      transform: scale(0.96);
+      opacity: 0.7;
+    }
+
+    .item-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .item-gradient {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.15) 70%, transparent 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .item-glass {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: transparent;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 3;
+      transition: opacity 0.45s ease, backdrop-filter 0.45s ease, box-shadow 0.45s ease;
+    }
+
+    .item:hover .item-glass {
+      opacity: 1;
+      backdrop-filter: blur(2px) saturate(140%) brightness(1.03);
+      -webkit-backdrop-filter: blur(2px) saturate(140%) brightness(1.03);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255,255,255,0.45),
+        inset 0 0 0 1px rgba(255,255,255,0.18),
+        0 16px 48px rgba(0,0,0,0.10);
+    }
+
+    .item-glass::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 18%, transparent 42%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    .item:hover .item-glass::before { opacity: 1; }
+
+    .item-content {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0 22px 26px;
+      color: #fff;
+      z-index: 4;
+    }
+
+    .item-badge {
+      display: inline-block;
+      background: transparent;
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 0;
+      margin-bottom: 8px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.25);
+    }
+
+    .item-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.35);
+    }
+
+    .item-desc {
+      font-size: 13.5px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.45;
+      margin-bottom: 16px;
+      max-width: 88%;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    }
+
+    .item-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .item-price {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    }
+
+    .heart-btn {
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.22);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .heart-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .heart-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 1.8;
+      transition: all 0.2s;
+    }
+
+    .heart-btn.liked {
+      background: rgba(255,59,92,0.28);
+      border-color: rgba(255,59,92,0.4);
+    }
+
+    .heart-btn.liked svg {
+      fill: #ff3b5c;
+      stroke: #ff3b5c;
+    }
+
+    .heart-btn:active { transform: scale(0.92); }
+
+    .end {
+      text-align: center;
+      padding: 24px 20px 50px;
+      font-size: 12px;
+      color: var(--end-color);
+    }
+
+    @media (min-width: 768px) {
+      .topbar-inner { padding: 22px 32px 0; }
+      .theme-toggle { right: 28px; top: 22px; }
+      .brand-name { font-size: 38px; }
+      .brand-sub { font-size: 10px; letter-spacing: 5px; margin-top: 8px; }
+      .categories { justify-content: center; padding-bottom: 18px; gap: 10px; }
+      .cat { padding: 8px 18px; font-size: 13.5px; }
+
+      .feed {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 16px 32px 60px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+      }
+
+      .item {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        aspect-ratio: 3 / 4;
+        border-radius: 22px;
+        box-shadow: 0 12px 40px var(--shadow);
+      }
+
+      .item:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 28px 60px rgba(0,0,0,0.16), 0 0 0 1px rgba(255,255,255,0.28);
+      }
+
+      .item:hover .item-img { transform: scale(1.03); }
+
+      .item.blurred {
+        filter: blur(9px) brightness(0.92);
+        transform: scale(0.97);
+        opacity: 0.75;
+      }
+
+      .item-content { padding: 0 24px 28px; }
+      .item-title { font-size: 22px; }
+      .item-desc { font-size: 13px; max-width: 90%; }
+      .item-price { font-size: 16px; }
+      .end { grid-column: 1 / -1; }
+    }
+
+    @media (min-width: 1200px) {
+      .topbar-inner { max-width: 1280px; }
+      .feed {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        max-width: 1280px;
+      }
+      .item { aspect-ratio: 3 / 4.1; }
+      .item-title { font-size: 21px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Alternar modo escuro" title="Modo escuro / claro">
+        <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+      <div class="brand-row">
+        <div class="brand-text">
+          <div class="brand-name">Lunéa</div>
+          <div class="brand-sub">· CONFEITARIA ·</div>
+        </div>
+      </div>
+      <div class="categories" id="cats">
+        <button type="button" class="cat active" data-f="all" onclick="filtrarMenu('all', this)">Todos</button>
+        <button type="button" class="cat" data-f="pastelaria" onclick="filtrarMenu('pastelaria', this)">Pastelaria</button>
+        <button type="button" class="cat" data-f="doces" onclick="filtrarMenu('doces', this)">Doces</button>
+        <button type="button" class="cat" data-f="salgados" onclick="filtrarMenu('salgados', this)">Salgados</button>
+        <button type="button" class="cat" data-f="cafe" onclick="filtrarMenu('cafe', this)">Café</button>
+        <button type="button" class="cat" data-f="bebidas" onclick="filtrarMenu('bebidas', this)">Bebidas</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="feed" id="feed"></div>
+  <div class="end" id="end">· Fim do cardápio ·</div>
+
+  <script>
+    const items = [
+      { cat: 'pastelaria', title: 'Croissant Clássico', desc: 'Massa folhada amanteigada, crocante por fora e macia por dentro.', price: '95 MT', img: 'images/croissant.jpg', badge: null },
+      { cat: 'pastelaria', title: 'Croissant de Chocolate', desc: 'Croissant com recheio generoso de chocolate belga.', price: '120 MT', img: 'images/choco-croissant.jpg', badge: 'BEST SELLER' },
+      { cat: 'pastelaria', title: 'Pão de Banana', desc: 'Fatia de pão de banana caseiro com cobertura de banana e creme.', price: '100 MT', img: 'images/banana-bread.jpg', badge: null },
+      { cat: 'doces', title: 'Brownie de Chocolate', desc: 'Brownie húmido com chocolate 70%, nozes e calda de chocolate.', price: '150 MT', img: 'images/brownie.jpg', badge: 'BEST SELLER' },
+      { cat: 'doces', title: 'Muffin de Chocolate', desc: 'Muffin quente com coração de chocolate derretido.', price: '110 MT', img: 'images/choco-muffin.jpg', badge: null },
+      { cat: 'doces', title: 'Bolo de Laranja', desc: 'Bolo de laranja com cobertura de chocolate e gomos frescos.', price: '130 MT', img: 'images/orange-cake.jpg', badge: null },
+      { cat: 'doces', title: 'Waffles com Banana', desc: 'Waffles crocantes com banana, caramelo e gelado de baunilha.', price: '250 MT', img: 'images/waffles.jpg', badge: 'BEST SELLER' },
+      { cat: 'doces', title: 'Panquecas de Queijo', desc: 'Panquecas de queijo fresco com natas e mel.', price: '200 MT', img: 'images/pancakes.jpg', badge: null },
+      { cat: 'salgados', title: 'Pizza Especial', desc: 'Pizza com pepperoni, pimento, azeitonas, cogumelos e queijo.', price: '420 MT', img: 'images/pizza.jpg', badge: null },
+      { cat: 'salgados', title: 'Hambúrguer Clássico', desc: 'Hambúrguer com queijo cheddar, alface, tomate e cebola roxa.', price: '350 MT', img: 'images/burger.jpg', badge: 'BEST SELLER' },
+      { cat: 'salgados', title: 'Sanduíche de Bife', desc: 'Baguete com bife grelhado, cheddar e vegetais frescos.', price: '300 MT', img: 'images/steak-sandwich.jpg', badge: null },
+      { cat: 'salgados', title: 'Asas de Frango', desc: 'Asas crocantes com molho teriyaki e sementes de sésamo.', price: '280 MT', img: 'images/wings.jpg', badge: null },
+      { cat: 'cafe', title: 'Espresso', desc: 'Café espresso intenso, extraído na hora.', price: '80 MT', img: 'images/espresso.jpg', badge: null },
+      { cat: 'cafe', title: 'Cappuccino', desc: 'Espresso com leite aveludado e arte latte.', price: '130 MT', img: 'images/cappuccino.jpg', badge: null },
+      { cat: 'cafe', title: 'Latte de Pistácio', desc: 'Café com leite, xarope de pistácio e pistácios triturados.', price: '180 MT', img: 'images/pistachio-latte.jpg', badge: 'BEST SELLER' },
+      { cat: 'bebidas', title: 'Frappé de Café', desc: 'Café gelado batido com natas, calda de chocolate e canela.', price: '160 MT', img: 'images/frappe.jpg', badge: null },
+      { cat: 'bebidas', title: 'Chocolate Quente', desc: 'Chocolate quente cremoso com canela e laranja desidratada.', price: '140 MT', img: 'images/hot-chocolate.jpg', badge: null },
+      { cat: 'bebidas', title: 'Sumo de Laranja', desc: 'Sumo de laranja natural, espremido na hora.', price: '100 MT', img: 'images/orange-juice.jpg', badge: null }
+    ];
+
+    let filter = 'all';
+    const feed = document.getElementById('feed');
+    const topbar = document.getElementById('topbar');
+    let observer = null;
+
+    function createItem(data) {
+      const el = document.createElement('article');
+      el.className = 'item';
+      el.dataset.cat = data.cat;
+      el.innerHTML = `
+        <img class="item-img" src="${data.img}" alt="${data.title}" loading="lazy" />
+        <div class="item-gradient"></div>
+        <div class="item-glass"></div>
+        <div class="item-content">
+          ${data.badge ? `<span class="item-badge">${data.badge}</span>` : ''}
+          <h2 class="item-title">${data.title}</h2>
+          <p class="item-desc">${data.desc}</p>
+          <div class="item-bottom">
+            <div class="item-price">${data.price}</div>
+            <button class="heart-btn" aria-label="Favorito">
+              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+      el.querySelector('.heart-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.currentTarget.classList.toggle('liked');
+      });
+      return el;
+    }
+
+    function observeItems() {
+      if (observer) observer.disconnect();
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) entry.target.classList.remove('blurred');
+          else if (entry.boundingClientRect.top < 0) entry.target.classList.add('blurred');
+        });
+      }, { root: null, rootMargin: '-10% 0px -20% 0px', threshold: 0.15 });
+      document.querySelectorAll('.item').forEach(item => observer.observe(item));
+    }
+
+    function render() {
+      feed.innerHTML = '';
+      const list = filter === 'all' ? items : items.filter(i => i.cat === filter);
+      list.forEach(item => feed.appendChild(createItem(item)));
+      observeItems();
+    }
+
+    window.filtrarMenu = function (categoria, btn) {
+      filter = categoria;
+      document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('lunea-theme', isDark ? 'dark' : 'light'); } catch (e) {}
+    });
+
+    render();
+
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const y = window.scrollY;
+          const up = y < lastScrollY;
+          topbar.classList.toggle('scrolled', y > 20);
+          topbar.classList.toggle('scroll-up', up && y > 40);
+          lastScrollY = y;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
